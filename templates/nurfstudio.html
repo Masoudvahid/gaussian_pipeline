@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NurfStudio Command Runner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #444;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .form-container {
+            width: 45%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"]{
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover{
+            background-color: #218838;
+        }
+
+        /* Common style for both buttons */
+        .btn-copy {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect */
+        .btn-copy:hover {
+            background-color: #218838;
+        }
+
+        #training-command-label, #process-command-label {
+            margin-top: 20px;
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>NurfStudio Command Runner</h1>
+
+    <div class="container">
+        <!-- Left Panel: Process Data -->
+        <div class="form-container">
+            <h2>Process Data</h2>
+            <form id="process-data-form" action="/process_data" method="POST">
+                <label for="process_cuda_device">GPU IDs:</label>
+                <input type="text" id="process_cuda_device" name="process_cuda_device" value="1" oninput="updateProcessCommand()"><br>
+
+                <label for="data">Data:</label>
+                <input type="text" id="data" name="data" value="./" oninput="updateProcessCommand()"><br>
+
+                <label for="output_dir">Output Dir:</label>
+                <input type="text" id="output_dir" name="output_dir" value="./hloc2" oninput="updateProcessCommand()"><br>
+
+                <label for="sfm_tool">SFM Tool:</label>
+                <input type="text" id="sfm_tool" name="sfm_tool" value="hloc" oninput="updateProcessCommand()"><br>
+
+                <input type="submit" value="Process Data">
+            </form>
+
+            <!-- Display the final command dynamically -->
+            <div id="process-command-label"></div>
+
+            <!-- Copy to clipboard button -->
+            <button id="copy-button-process" class="btn-copy" onclick="copyProcessCommand()">Copy to Clipboard</button>
+        </div>
+
+        <!-- Right Panel: Training -->
+        <div class="form-container">
+            <h2>Training</h2>
+            <form id="nurfstudio-form" action="/run_nurfstudio" method="POST">
+                <label for="cuda_device">GPU IDs:</label>
+                <input type="text" id="cuda_device" name="cuda_device" value="1" oninput="updateCommand()"><br>
+
+                <label for="websocket_port">Viewer Port:</label>
+                <input type="number" id="websocket_port" name="websocket_port" value="5000" oninput="updateCommand()"><br>
+
+                <label for="max_iterations">Number of Iterations:</label>
+                <input type="number" id="max_iterations" name="max_iterations" value="30000" oninput="updateCommand()"><br>
+
+                <label for="downscale_factor">Downscale Factor:</label>
+                <input type="number" id="downscale_factor" name="downscale_factor" value="1" oninput="updateCommand()"><br>
+
+                <input type="submit" value="Start Training">
+            </form>
+
+            <!-- Display the final command dynamically -->
+            <div id="training-command-label"></div>
+
+            <!-- Copy to clipboard button -->
+            <button id="copy-button" class="btn-copy" onclick="copyTrainCommand()">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Training panel command update
+        function updateCommand() {
+            const cudaDevice = document.getElementById('cuda_device').value;
+            const websocketPort = document.getElementById('websocket_port').value;
+            const maxIterations = document.getElementById('max_iterations').value;
+            const downscaleFactor = document.getElementById('downscale_factor').value;
+
+            const command = `CUDA_VISIBLE_DEVICES=${cudaDevice} ns-train splatfacto-big `
+                            + `--viewer.websocket-port ${websocketPort} `
+                            + `--max-num-iterations ${maxIterations} `
+                            + `--pipeline.datamanager.cache-images gpu --data . colmap `
+                            + `--downscale-factor ${downscaleFactor}`;
+
+            document.getElementById('training-command-label').innerText = command;
+        }
+
+        function copyTrainCommand() {
+            const command = document.getElementById('training-command-label').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = command;
+
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            // alert("Command copied to clipboard!");
+        }
+
+        // Process Data panel command update
+        function updateProcessCommand() {
+            const cudaDevice = document.getElementById('process_cuda_device').value;
+            const data = document.getElementById('data').value;
+            const outputDir = document.getElementById('output_dir').value;
+            const sfmTool = document.getElementById('sfm_tool').value;
+
+            const processCommand = `CUDA_VISIBLE_DEVICES=${cudaDevice} ns-process-data images `
+                                   + `--data ${data} `
+                                   + `--output-dir ${outputDir} `
+                                   + `--sfm-tool ${sfmTool} `
+                                   + `--matching-method exhaustive --matcher-type superglue --feature-type superpoint_max --refine-pixsfm`;
+
+            document.getElementById('process-command-label').innerText = processCommand;
+        }
+
+        function copyProcessCommand() {
+            const processCommand = document.getElementById('process-command-label').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = processCommand;
+
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            // alert("Process data command copied to clipboard!");
+        }
+
+        // Initial calls to set the default commands when the page loads
+        window.onload = function() {
+            updateCommand();
+            updateProcessCommand();
+        };
+    </script>
+</body>
+</html>

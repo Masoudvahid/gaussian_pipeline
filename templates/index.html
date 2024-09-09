@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+            background: url('/static/sber_logo.png') no-repeat center center fixed;
+            background-size: cover; /* Keeps the image at its original size */
+        }
+        h1 {
+            font-size: 36px;
+            color: #444;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .image-section img {
+            width: 100%;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Gaussian Splatting Pipeline</h1>
+
+        <a href="/cutie" class="button">Cutie</a>
+        <a href="/metashape" class="button">Metashape</a>
+        <a href="/nurfstudio" class="button">NurfStudio</a>
+
+        <!-- Add the CR2 to PNG button -->
+        <a href="/cr2_to_png" class="button">Convert CR2 to PNG</a>
+    </div>
+</body>
+</html>

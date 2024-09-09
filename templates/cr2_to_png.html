@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert CR2 to PNG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 36px;
+            color: #444;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .folder-input {
+            position: relative;
+            width: 100%;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .folder-input button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            padding: 0 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Folder for CR2 to PNG Conversion</h1>
+
+    <div class="form-container">
+        <form action="/convert_cr2_to_png" method="POST" id="folderForm">
+            <label for="folder">Choose Folder:</label>
+            <div class="folder-input">
+                <input type="text" id="folderPath" name="folder" placeholder="Click 'Choose Folder' to select" readonly>
+                <button type="button" onclick="selectFolder()">Choose Folder</button>
+            </div>
+            <input type="submit" value="Convert">
+        </form>
+    </div>
+
+    <script>
+        function selectFolder() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.addEventListener('change', function (event) {
+                const folderPath = event.target.files[0].webkitRelativePath.split('/')[0]; // Get the folder path
+                document.getElementById('folderPath').value = folderPath; // Set it in the form field
+            });
+            input.click();
+        }
+    </script>
+</body>
+</html>
